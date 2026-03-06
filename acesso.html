@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<body style="font-family: Arial; background: #12121b; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+    <div style="background: #1c1c28; padding: 40px; border-radius: 10px; text-align: center; border: 1px solid #ff2d75;">
+        <h2>🔐 Área Restrita</h2>
+        <input type="text" id="user" placeholder="Usuário" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none;"><br>
+        <input type="password" id="pass" placeholder="Senha" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: none;"><br>
+        <button onclick="entrar()" style="width: 100%; padding: 10px; background: #ff2d75; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px;">ACESSAR PAINEL</button>
+    </div>
+
+    <script>
+        async function entrar() {
+            const res = await fetch('/login-sistema', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    usuario: document.getElementById('user').value, 
+                    senha: document.getElementById('pass').value 
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                // Se a senha estiver certa, ele libera o acesso ao painel visual
+                window.location.href = '/painel.html';
+            } else {
+                alert(result.message);
+            }
+        }
+    </script>
+</body>
+</html>
