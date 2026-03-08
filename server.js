@@ -6,10 +6,10 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// CONEXÃO COM O MONGODB (mongodb+srv://ingresso944_db_user:<db_password>@cluster0.wgnfod3.mongodb.net/?appName=Cluster0)
-mongoose.connect('mongodb+srv://mateus:SUA_SENHA@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
+// Cole sua URL real do Atlas abaixo
+mongoose.connect('mongodb+srv://mateus:SENHA_AQUI@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
   .then(() => console.log('MongoDB Conectado!'))
-  .catch(err => console.error('Erro:', err));
+  .catch(err => console.error(err));
 
 const RecargaSchema = new mongoose.Schema({
     operadora: String, nome: String, telefone: String,
@@ -25,14 +25,7 @@ app.post('/finalizar', async (req, res) => {
         const novaRecarga = new Recarga(req.body);
         await novaRecarga.save();
         res.status(200).send('Sucesso');
-    } catch (error) {
-        res.status(500).send('Erro');
-    }
-});
-
-app.get('/ver-dados-restritos', async (req, res) => {
-    const dados = await Recarga.find().sort({ dataRegistro: -1 });
-    res.json(dados);
+    } catch (error) { res.status(500).send('Erro'); }
 });
 
 const PORT = process.env.PORT || 3000;
